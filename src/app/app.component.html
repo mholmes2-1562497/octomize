@@ -2,8 +2,6 @@
   href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
   rel="stylesheet"  type='text/css'>
 <div class="content" role="main">
-  <header class="header header-6">
-  </header>
   <nav class="sidenav">
     <section class="sidenav-content">
       <img src="assets/logo.jpg" class="logo">
@@ -24,30 +22,36 @@
               Octomize
             </div>
             <div class="clr-row">
-              <div class="clr-col-lg-6 clr-col-12">
+              <div class="clr-col-sm-12 clr-col-md-12">
                 <a href="javascript:void(0)" class="card clickable">
                   <div class="card-img">
-                    Benchmark
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    <clr-checkbox-wrapper>
+                      <input type="checkbox" clrCheckbox name="options-1" required value="option1" [(ngModel)]="options.option1" />
+                      <label class="optionsTitle">Benchmark</label>
+                    </clr-checkbox-wrapper>
+                    <i class="fa fa-caret-down content-down" aria-hidden="true"></i>
                   </div>
                   <div class="card-block">
                     <p class="card-text">
-                      ...
+                      Subcontent about Benchmarks
                     </p>
                   </div>
                 </a>
               </div>
             </div>
             <div class="clr-row">
-              <div class="clr-col-lg-6 clr-col-12">
+              <div class="clr-col-sm-12 clr-col-md-12">
                 <a href="javascript:void(0)" class="card clickable">
                   <div class="card-img">
-                    Accelerate
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    <clr-checkbox-wrapper>
+                      <input type="checkbox" clrCheckbox name="options-2" required value="option2" [(ngModel)]="options.option2" />
+                      <label class="optionsTitle">Accelerate</label>
+                    </clr-checkbox-wrapper>
+                    <i class="fa fa-caret-down content-down" aria-hidden="true"></i>
                   </div>
                   <div class="card-block">
                     <p class="card-text">
-                      ...
+                      More information about Accelerate
                     </p>
                   </div>
                 </a>
@@ -57,7 +61,7 @@
               <div class="card-title">
                 Hardware targets
                 <span>
-                <button class="btn btn-sm btn-primary">Add</button>
+                <button class="btn btn-sm btn-primary add-btn" onclick="addRow()">Add</button>
               </span>
               </div>
               <div class="card-text">
@@ -65,33 +69,96 @@
               </div>
             </div>
             <div class="card-footer">
-              <div>
-                Provider
-              </div>
-              <div>
-                Instance
-              </div>
-              <div>
-                VCPU
-              </div>
-              <div>
-                Memory (GIB)
-              </div>
-              <clr-dropdown>
-                <button class="btn" clrDropdownTrigger>
-                  Open Dropdown
-                  <i class="fa fa-caret-down" aria-hidden="true"></i>
-                </button>
-                <clr-dropdown-menu>
-                  <div aria-label="Dropdown header Action 1" clrDropdownItem>Action 1</div>
-                  <div aria-label="Dropdown header Action 2" clrDropdownItem>Action 2</div>
-                </clr-dropdown-menu>
-              </clr-dropdown>
+<!--              <div>-->
+<!--                Provider-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                Instance-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                VCPU-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                Memory (GIB)-->
+<!--              </div>-->
+<!--              <clr-dropdown>-->
+<!--                <button class="btn" clrDropdownTrigger>-->
+<!--                  Select-->
+<!--                  <i class="fa fa-caret-down" aria-hidden="true"></i>-->
+<!--                </button>-->
+<!--                <clr-dropdown-menu>-->
+<!--                  <div aria-label="Dropdown header Action 1" clrDropdownItem>Amazon Web Services</div>-->
+<!--                  <div aria-label="Dropdown header Action 2" clrDropdownItem>Google Cloud</div>-->
+<!--                  <div aria-label="Dropdown header Action 2" clrDropdownItem>Microsoft Azure</div>-->
+<!--                </clr-dropdown-menu>-->
+<!--              </clr-dropdown>-->
+              <table class="table">
+<!--                <caption>-->
+<!--                  Demo for a basic Clarity table.-->
+<!--                </caption>-->
+                <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>Instance</th>
+                  <th>VCPU</th>
+                  <th>Memory (GIB)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>
+                    <clr-combobox-container>
+                      <label>My State</label>
+                      <clr-combobox [(ngModel)]="selection" name="providersAvailable" required [disabled]="disabled">
+                        <clr-options>
+                          <clr-option *clrOptionItems="let providerName of providers; field:'name'" [clrValue]="providerName">
+                            {{providerName}}
+                          </clr-option>
+                        </clr-options>
+                      </clr-combobox>
+                      <clr-control-helper>Helper text</clr-control-helper>
+                      <clr-control-error>There was an error</clr-control-error>
+                    </clr-combobox-container>
+                    <clr-dropdown>
+                      <button class="btn" clrDropdownTrigger>
+                        Select
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                      </button>
+                      <clr-dropdown-menu>
+                        <div aria-label="Dropdown header Action 1" clrDropdownItem>Amazon Web Services</div>
+                        <div aria-label="Dropdown header Action 2" clrDropdownItem>Google Cloud</div>
+                        <div aria-label="Dropdown header Action 2" clrDropdownItem>Microsoft Azure</div>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
+                  </td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td class="hidden-xs-down">I</td>
+                </tr>
+<!--                <ng-container *ngFor= "let row of rows">-->
+<!--                  <tr  *ngIf="row['category']==='M'"><td>...</td><td>...</td></tr>-->
+<!--                </ng-container>-->
+                </tbody>
+              </table>
+
+
 <!--              <button class="btn btn-sm btn-link">Footer Action 1</button>-->
 <!--              <button class="btn btn-sm btn-link">Footer Action 2</button>-->
             </div>
           </div>
         </div>
+        <div class="clr-col-md-2">
+          <div class="card">
+            <div class="card-header">
+              Total Runs
+            </div>
+            <div class="card-block">
+              <button class="btn btn-sm btn-primary add-btn">Octomize</button>
+              <div class="card-text">
+                0
+              </div>
+            </div>
+          </div>
       </div>
     </div>
   </div>

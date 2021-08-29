@@ -9,6 +9,8 @@ import { ModelViewComponent } from './model-view/model-view.component';
 import '@cds/core/icon/register.js';
 import { ClarityIcons, userIcon, homeIcon, lineChartIcon, angleIcon } from '@cds/core/icon';
 import { HttpClientModule } from '@angular/common/http';
+import { AppService } from './app.component.service';
+import { FormsModule } from '@angular/forms';
 
 ClarityIcons.addIcons(userIcon, homeIcon, lineChartIcon, userIcon);
 @NgModule({
@@ -21,9 +23,10 @@ ClarityIcons.addIcons(userIcon, homeIcon, lineChartIcon, userIcon);
     HttpClientModule,
     AppRoutingModule,
     ClarityModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [AppService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

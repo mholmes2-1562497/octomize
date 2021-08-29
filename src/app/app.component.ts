@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { ConfigService } from './app.component.service';
+import { Component, OnInit } from '@angular/core';
+import { AppService } from './app.component.service';
+import { Hardware } from '../models/hardware';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +10,48 @@ import { ConfigService } from './app.component.service';
 
 //
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'octoml-assessment';
-  provider: String = '';
+  provider: Set<String> = new Set();
+  hardwareData: Map<String, Hardware[]> = new Map();
+  newRow = [];
+  openModal: boolean = false;
+  options = {'option1': 'Test', 'option2': 'Test2'};
+  selection: string = '';
+  disabled = false;
+  providers = ['Amazon Web Services', 'Google Cloud', 'Microsoft Azure'];
   //get providers
   //turn into iterable list & display in dropdown
 
+  constructor(private appComponentService: AppService){}
 
-//   configService: ConfigService;
-//   config: ConfigService | undefined;
+  ngOnInit() {
+    this.getHardwareInfo();
+  }
+
+  getHardwareInfo() {
+    this.appComponentService.getHardware().subscribe(data => {
+        console.log(data);
+        for(let item in data ) {
+          let dataArr = [data[item]];
+          this.provider.add(data[item].provider);
+          this.hardwareData.set(item, dataArr);
+//           dataArr = [];
+        }
+        console.log(this.hardwareData);
+        console.log(this.provider);
+    });
+
+  }
+
+  setDropDownValues() {
+
+  }
+
+  addRow() {
+//     this.openModal = true;
+  }
+
 }
 
-// showConfig() {
-//   this.configService.getConfig()
-//     .subscribe((data: Config) => {
-//         hardware:data
-// //         heroesUrl: data.heroesUrl,
-// //         textfile:  data.textfile,
-// //         date: data.date,
-//     });
-// }
+
