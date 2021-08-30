@@ -21,12 +21,12 @@
             <div class="card-header">
               Octomize
             </div>
-            <div class="clr-row">
-              <div class="clr-col-sm-12 clr-col-md-12">
+            <div class="clr-row checkBox">
+              <div class="clr-col-sm-12 clr-col-md-10">
                 <a href="javascript:void(0)" class="card clickable">
                   <div class="card-img">
                     <clr-checkbox-wrapper>
-                      <input type="checkbox" clrCheckbox name="options-1" required value="option1" [(ngModel)]="options.option1" />
+                      <input type="checkbox" clrCheckbox name="benchmark" required [(ngModel)]="benchmarkIsChecked" />
                       <label class="optionsTitle">Benchmark</label>
                     </clr-checkbox-wrapper>
                     <i class="fa fa-caret-down content-down" aria-hidden="true"></i>
@@ -39,12 +39,12 @@
                 </a>
               </div>
             </div>
-            <div class="clr-row">
-              <div class="clr-col-sm-12 clr-col-md-12">
+            <div class="clr-row checkBox">
+              <div class="clr-col-sm-12 clr-col-md-10">
                 <a href="javascript:void(0)" class="card clickable">
                   <div class="card-img">
                     <clr-checkbox-wrapper>
-                      <input type="checkbox" clrCheckbox name="options-2" required value="option2" [(ngModel)]="options.option2" />
+                      <input type="checkbox" clrCheckbox name="accelerate" required [(ngModel)]="accelerateIsChecked" />
                       <label class="optionsTitle">Accelerate</label>
                     </clr-checkbox-wrapper>
                     <i class="fa fa-caret-down content-down" aria-hidden="true"></i>
@@ -61,13 +61,40 @@
               <div class="card-title">
                 Hardware targets
                 <span>
-                <button class="btn btn-sm btn-primary add-btn" onclick="addRow()">Add</button>
+                <button class="btn btn-sm btn-primary add-btn" (click)="openModal = true;">Add</button>
               </span>
               </div>
-              <div class="card-text">
-                ...
-              </div>
+
             </div>
+            <clr-modal [(clrModalOpen)]="openModal">
+              <h3 class="modal-title">Select a provider</h3>
+              <div class="modal-body">
+                <clr-combobox-container>
+                  <clr-combobox [(ngModel)]="providerSelection" name="select provider" required [disabled]="disabled">
+                    <clr-options>
+                      <clr-option clrValue="Amazon Web Services">Amazon Web Services</clr-option>
+                      <clr-option clrValue="Google Cloud">Google Cloud</clr-option>
+                      <clr-option clrValue="Microsoft Azure">Microsoft Azure</clr-option>
+                    </clr-options>
+                  </clr-combobox>
+                </clr-combobox-container>
+                <clr-combobox-container>
+                  <clr-combobox [(ngModel)]="instanceSelection" name="instanceSelection" required [disabled]="disabled">
+                    <clr-options>
+                      <clr-option *clrOptionItems="let instance of instanceOptions; field:'name'" [clrValue]="instance">
+                        <cds-icon shape="world" role="img" aria-label="World is turning"></cds-icon> {{instance}}
+                        <cds-icon shape="sun" role="img" aria-label="Sun is shining"></cds-icon>
+                      </clr-option>
+                    </clr-options>
+
+                  </clr-combobox>
+                </clr-combobox-container>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline" (click)="openModal = false">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="openModal = false">Add</button>
+              </div>
+            </clr-modal>
             <div class="card-footer">
 <!--              <div>-->
 <!--                Provider-->
@@ -93,9 +120,6 @@
 <!--                </clr-dropdown-menu>-->
 <!--              </clr-dropdown>-->
               <table class="table">
-<!--                <caption>-->
-<!--                  Demo for a basic Clarity table.-->
-<!--                </caption>-->
                 <thead>
                 <tr>
                   <th>Provider</th>
@@ -107,29 +131,18 @@
                 <tbody>
                 <tr>
                   <td>
-                    <clr-combobox-container>
-                      <label>My State</label>
-                      <clr-combobox [(ngModel)]="selection" name="providersAvailable" required [disabled]="disabled">
-                        <clr-options>
-                          <clr-option *clrOptionItems="let providerName of providers; field:'name'" [clrValue]="providerName">
-                            {{providerName}}
-                          </clr-option>
-                        </clr-options>
-                      </clr-combobox>
-                      <clr-control-helper>Helper text</clr-control-helper>
-                      <clr-control-error>There was an error</clr-control-error>
-                    </clr-combobox-container>
-                    <clr-dropdown>
-                      <button class="btn" clrDropdownTrigger>
-                        Select
-                        <i class="fa fa-caret-down" aria-hidden="true"></i>
-                      </button>
-                      <clr-dropdown-menu>
-                        <div aria-label="Dropdown header Action 1" clrDropdownItem>Amazon Web Services</div>
-                        <div aria-label="Dropdown header Action 2" clrDropdownItem>Google Cloud</div>
-                        <div aria-label="Dropdown header Action 2" clrDropdownItem>Microsoft Azure</div>
-                      </clr-dropdown-menu>
-                    </clr-dropdown>
+
+<!--                    <clr-dropdown>-->
+<!--                      <button class="btn" clrDropdownTrigger>-->
+<!--                        Select-->
+<!--                        <i class="fa fa-caret-down" aria-hidden="true"></i>-->
+<!--                      </button>-->
+<!--                      <clr-dropdown-menu>-->
+<!--                        <div aria-label="Dropdown header Action 1" clrDropdownItem>Amazon Web Services</div>-->
+<!--                        <div aria-label="Dropdown header Action 2" clrDropdownItem>Google Cloud</div>-->
+<!--                        <div aria-label="Dropdown header Action 3" clrDropdownItem>Microsoft Azure</div>-->
+<!--                      </clr-dropdown-menu>-->
+<!--                    </clr-dropdown>-->
                   </td>
                   <td>1</td>
                   <td>1</td>
@@ -147,19 +160,19 @@
             </div>
           </div>
         </div>
-        <div class="clr-col-md-2">
-          <div class="card">
-            <div class="card-header">
-              Total Runs
-            </div>
-            <div class="card-block">
-              <button class="btn btn-sm btn-primary add-btn">Octomize</button>
-              <div class="card-text">
-                0
-              </div>
-            </div>
-          </div>
-      </div>
+<!--        <div class="clr-col-md-2">-->
+<!--          <div class="card">-->
+<!--            <div class="card-header">-->
+<!--              Total Runs-->
+<!--            </div>-->
+<!--            <div class="card-block">-->
+<!--              <button class="btn btn-sm btn-primary add-btn">Octomize</button>-->
+<!--              <div class="card-text">-->
+<!--                0-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--      </div>-->
     </div>
   </div>
 
