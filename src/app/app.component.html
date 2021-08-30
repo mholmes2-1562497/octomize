@@ -69,110 +69,64 @@
             <clr-modal [(clrModalOpen)]="openModal">
               <h3 class="modal-title">Select a provider</h3>
               <div class="modal-body">
-                <clr-combobox-container>
-                  <clr-combobox [(ngModel)]="providerSelection" name="select provider" required [disabled]="disabled">
-                    <clr-options>
-                      <clr-option clrValue="Amazon Web Services">Amazon Web Services</clr-option>
-                      <clr-option clrValue="Google Cloud">Google Cloud</clr-option>
-                      <clr-option clrValue="Microsoft Azure">Microsoft Azure</clr-option>
-                    </clr-options>
-                  </clr-combobox>
-                </clr-combobox-container>
-                <clr-combobox-container>
-                  <clr-combobox [(ngModel)]="instanceSelection" name="instanceSelection" required [disabled]="disabled">
-                    <clr-options>
-                      <clr-option *clrOptionItems="let instance of instanceOptions; field:'name'" [clrValue]="instance">
-                        <cds-icon shape="world" role="img" aria-label="World is turning"></cds-icon> {{instance}}
-                        <cds-icon shape="sun" role="img" aria-label="Sun is shining"></cds-icon>
-                      </clr-option>
-                    </clr-options>
-
-                  </clr-combobox>
-                </clr-combobox-container>
+                <form clrForm>
+                  <clr-datalist-container>
+                    <input name="providerSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="providerSelection"/>
+                    <datalist>
+                      <option *ngFor="let provider of getProviders()" [value]="provider">{{provider}}</option>
+                    </datalist>
+                    <clr-control-helper>Select Provider</clr-control-helper>
+                    <clr-control-error>There was an error</clr-control-error>
+                  </clr-datalist-container>
+                </form>
+                <form clrForm>
+                  <clr-datalist-container>
+                    <input name="instanceSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="instanceSelection"/>
+                    <datalist>
+                      <option *ngFor="let instance of getInstances(providerSelection)" [value]="instance">{{instance}}</option>
+                    </datalist>
+                    <clr-control-helper>Select Instance</clr-control-helper>
+                    <clr-control-error>There was an error</clr-control-error>
+                  </clr-datalist-container>
+                </form>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-outline" (click)="openModal = false">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="openModal = false">Add</button>
+                <button type="button" class="btn btn-primary" (click)="openModal = false; addRow()">Add</button>
               </div>
             </clr-modal>
+            <clr-datagrid>
+              <clr-dg-column>Provider</clr-dg-column>
+              <clr-dg-column>Instance</clr-dg-column>
+              <clr-dg-column>CPU</clr-dg-column>
+              <clr-dg-column>Memory</clr-dg-column>
+
+              <clr-dg-row *ngFor="let hardware of datagridArr">
+                <clr-dg-cell>{{hardware.provider}}</clr-dg-cell>
+                <clr-dg-cell>{{hardware.instance}}</clr-dg-cell>
+                <clr-dg-cell>{{hardware.cpu}}</clr-dg-cell>
+                <clr-dg-cell>{{hardware.memory}}</clr-dg-cell>
+              </clr-dg-row>
+            </clr-datagrid>
             <div class="card-footer">
-<!--              <div>-->
-<!--                Provider-->
-<!--              </div>-->
-<!--              <div>-->
-<!--                Instance-->
-<!--              </div>-->
-<!--              <div>-->
-<!--                VCPU-->
-<!--              </div>-->
-<!--              <div>-->
-<!--                Memory (GIB)-->
-<!--              </div>-->
-<!--              <clr-dropdown>-->
-<!--                <button class="btn" clrDropdownTrigger>-->
-<!--                  Select-->
-<!--                  <i class="fa fa-caret-down" aria-hidden="true"></i>-->
-<!--                </button>-->
-<!--                <clr-dropdown-menu>-->
-<!--                  <div aria-label="Dropdown header Action 1" clrDropdownItem>Amazon Web Services</div>-->
-<!--                  <div aria-label="Dropdown header Action 2" clrDropdownItem>Google Cloud</div>-->
-<!--                  <div aria-label="Dropdown header Action 2" clrDropdownItem>Microsoft Azure</div>-->
-<!--                </clr-dropdown-menu>-->
-<!--              </clr-dropdown>-->
-              <table class="table">
-                <thead>
-                <tr>
-                  <th>Provider</th>
-                  <th>Instance</th>
-                  <th>VCPU</th>
-                  <th>Memory (GIB)</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td>
-
-<!--                    <clr-dropdown>-->
-<!--                      <button class="btn" clrDropdownTrigger>-->
-<!--                        Select-->
-<!--                        <i class="fa fa-caret-down" aria-hidden="true"></i>-->
-<!--                      </button>-->
-<!--                      <clr-dropdown-menu>-->
-<!--                        <div aria-label="Dropdown header Action 1" clrDropdownItem>Amazon Web Services</div>-->
-<!--                        <div aria-label="Dropdown header Action 2" clrDropdownItem>Google Cloud</div>-->
-<!--                        <div aria-label="Dropdown header Action 3" clrDropdownItem>Microsoft Azure</div>-->
-<!--                      </clr-dropdown-menu>-->
-<!--                    </clr-dropdown>-->
-                  </td>
-                  <td>1</td>
-                  <td>1</td>
-                  <td class="hidden-xs-down">I</td>
-                </tr>
-<!--                <ng-container *ngFor= "let row of rows">-->
-<!--                  <tr  *ngIf="row['category']==='M'"><td>...</td><td>...</td></tr>-->
-<!--                </ng-container>-->
-                </tbody>
-              </table>
-
-
 <!--              <button class="btn btn-sm btn-link">Footer Action 1</button>-->
 <!--              <button class="btn btn-sm btn-link">Footer Action 2</button>-->
             </div>
           </div>
         </div>
-<!--        <div class="clr-col-md-2">-->
-<!--          <div class="card">-->
-<!--            <div class="card-header">-->
-<!--              Total Runs-->
-<!--            </div>-->
-<!--            <div class="card-block">-->
-<!--              <button class="btn btn-sm btn-primary add-btn">Octomize</button>-->
-<!--              <div class="card-text">-->
-<!--                0-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--      </div>-->
+        <div class="clr-col-md-2">
+          <div class="card">
+            <div class="card-header">
+              Total Runs
+            </div>
+            <div class="card-block">
+              <button class="btn btn-sm btn-primary add-btn">Octomize</button>
+              <div class="card-text">
+                {{datagridArr.length}}
+              </div>
+            </div>
+          </div>
+      </div>
     </div>
   </div>
 

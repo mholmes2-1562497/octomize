@@ -8,21 +8,19 @@ import { Hardware } from '../models/hardware';
   styleUrls: ['./app.component.scss']
 })
 
-//
-
 export class AppComponent implements OnInit, DoCheck {
-  title = 'octoml-assessment';
-  provider: Set<String> = new Set();
   hardwareData: Map<String, Hardware[]> = new Map();
-  instanceOptions: string[] = [];
   openModal: boolean = false;
   accelerateIsChecked: boolean = false;
   benchmarkIsChecked: boolean = false;
-  providerSelection: string = 'Select Provider';
-  instanceSelection: string = 'Select Instance';
+  providerSelection: string = '';
+  instanceSelection: string = '';
   instanceSelected: boolean = false;
   disabled = false;
-  providers: string[]  = ['Amazon Web Services', 'Google Cloud', 'Microsoft Azure'];
+  hardwareDataArr: any;
+  dropdownData: Map<String, Set<String>> = new Map();
+  displayProviders: Map<String, String> = new Map();
+  datagridArr: Hardware[] = [];
 
   constructor(private appComponentService: AppService){}
 
@@ -32,37 +30,60 @@ export class AppComponent implements OnInit, DoCheck {
 
   ngDoCheck() {
 //     console.log(this.accelerateIsChecked);
-    console.log(this.providerSelection);
-    this.setProviderDetails();
+//     console.log(this.providerSelection);
+//     console.log(this.getProviders());
+//     console.log(this.dropdownData);
+//     console.log(this.getInstances(this.providerSelection));
+//     this.setProviderDetails();
+//     console.log(this.instanceOptions);
   }
 
-
-  onChange(newValue: any) {
-    console.log(this.providerSelection);
-    console.log(newValue);
-    this.providerSelection = newValue;
-  }
+//
+//   onChange(newValue: any) {
+//     console.log(this.providerSelection);
+//     console.log(newValue);
+//     this.providerSelection = newValue;
+//     this.getInstances(this.providerSelection);
+//   }
 
   getHardwareInfo() {
     this.appComponentService.getHardware().subscribe(data => {
-        console.log(data);
+        this.hardwareDataArr = data;
+        console.log(this.hardwareDataArr);
         for(let item in data ) {
           let dataArr = [data[item]];
-          // add unique providers to set to later use as values for dropdowns
-          this.provider.add(data[item].provider);
+          // takes name of provider received from backend and associates it with abbreviation for display
+          if(data[item].provider == 'AWS') {
+            this.displayProviders.set('Amazon Web Services', 'AWS');
+          } else if (data[item].provider == 'GCP') {
+            this.displayProviders.set('Google Cloud','GCP');
+          } else if (data[item].provider == 'MA') {
+            this.displayProviders.set('Microsoft Azure','MA');
+          }
           this.hardwareData.set(item, dataArr);
-          this.instanceOptions.push(data[item].instance);
         }
         console.log(this.hardwareData);
-        console.log(this.provider);
-
-
-    });
         this.setProviderDetails();
+    });
   }
 
-  // set dropdown values when provider is selected --> on change of dropdown provider
+  // assign map of provider abbreviation with set of instances
   setProviderDetails() {
+    // get provider, if already created, get set and push to set, otherwise add new set
+    let instanceSet: Set<String> = new Set();
+    for(let item in this.hardwareDataArr) {
+      if(this.dropdownData.get(this.hardwareDataArr[item].provider)) {
+        // get current set, and add new instance value
+        let tempSet: Set<String> = new Set();
+        tempSet = this.dropdownData.get(this.hardwareDataArr[item].provider)!;
+        tempSet.add(this.hardwareDataArr[item].instance);
+      } else {
+        instanceSet.add(this.hardwareDataArr[item].instance);
+        this.dropdownData.set(this.hardwareDataArr[item].provider, instanceSet);
+        instanceSet = new Set();
+      }
+      console.log(this.dropdownData);
+    }
 //   console.log(this.hardwareData.entries());
 //    if (this.selection != 'Select Provider') {
 //        console.log(this.hardwareData.get(this.selection));
@@ -81,10 +102,59 @@ export class AppComponent implements OnInit, DoCheck {
 //     }
   }
 
-  addRow() {
-//     this.openModal = true;
+  // get array of instances to display in dropdowns
+  getInstances(key: string): string[] {
+    let instancesArr: any[] = [];
+    // set of instances from abbreviations of providers
+    let instancesSet: Set<String> = this.dropdownData.get(this.displayProviders.get(key));
+    console.log(instancesSet);
+    if (instancesSet) {
+      for(let value of Array.from(instancesSet).values()) {
+        instancesArr.push(value);
+      }
+    }
+     return instancesArr;
+  }
+
+  // get array of providers to display in drowdown
+  getProviders(): string[] {
+    let providersArr: any[] = Array.from(this.displayProviders.keys());
+    return providersArr;
+  }
+
+  addRow(){
+  // null check, then add row components
+    if(this.instanceSelection && this.providerSelection) {
+//       datagridArr.push(this.providerSelection, this.instanceSelection);
+      console.log(this.datagridArr);
+      for(let item in this.hardwareDataArr) {
+        console.log(this.providerSelection);
+        console.log(this.hardwareDataArr[item].provider);
+        // search map of data to find the full data for provider and selection
+        if(this.hardwareDataArr[item].provider === this.displayProviders.get(this.providerSelection)
+          && this.hardwareDataArr[item].instance === this.instanceSelection) {
+            console.log('match found!');
+            this.datagridArr.push(this.hardwareDataArr[item]);
+            console.log(this.datagridArr);
+            this.clearInputs();
+//             newRowHardware: Hardware = new Hardware(this.hardwareDataArr[item]);
+//             console.log(newRowHardware);
+          }
+      }
+    }
+  }
+
+  clearInputs() {
+    this.instanceSelection = '';
+    this.providerSelection = '';
   }
 
 }
+/*
 
-
+Next Steps:
+  reset errors on datalists when inputs reset
+  create total runs pane with octomize button that sends data to backend
+  1. properly create object to post to both accelerate and benchmark
+  2.
+ */
