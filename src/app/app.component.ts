@@ -10,24 +10,28 @@ import { Benchmark } from '../models/benchmark';
 })
 
 export class AppComponent implements OnInit, DoCheck {
-  hardwareData: Map<String, Hardware[]> = new Map();
-  openModal: boolean = false;
   accelerateIsChecked: boolean = false;
   benchmarkIsChecked: boolean = false;
-  providerSelection: string = '';
-  instanceSelection: string = '';
+  disabled: boolean = false;
   instanceSelected: boolean = false;
-  disabled = false;
-  hardwareDataArr: any;
+  onxChecked: boolean = false;
+  openModal: boolean = false;
+  tvmChecked: boolean = false;
+
   dropdownData: Map<String, Set<String>> = new Map();
   displayProviders: Map<String, String> = new Map();
-  datagridArr: Hardware[] = [];
-//   accelerateCardClicked: boolean = false;
-  onxChecked: boolean = false;
-  tvmChecked: boolean = false;
-  engine: any;
+  hardwareData: Map<String, Hardware[]> = new Map();
+
+  instanceSelection: string = '';
   numTrials: string ='';
+  providerSelection: string = '';
   runsPerTrial: string ='';
+
+  datagridArr: Hardware[] = [];
+  engine: any;
+  hardwareDataArr: any;
+
+
 
 
   constructor(private appComponentService: AppService){}
@@ -46,19 +50,10 @@ export class AppComponent implements OnInit, DoCheck {
 //     console.log(this.instanceOptions);
   }
 
-//
-//   onChange(newValue: any) {
-//     console.log(this.providerSelection);
-//     console.log(newValue);
-//     this.providerSelection = newValue;
-//     this.getInstances(this.providerSelection);
-//   }
-
   getHardwareInfo() {
     this.appComponentService.getHardware().subscribe(data => {
         this.hardwareDataArr = data;
-        console.log(this.hardwareDataArr);
-        for(let item in data ) {
+        for(let item in data) {
           let dataArr = [data[item]];
           // takes name of provider received from backend and associates it with abbreviation for display
           if(data[item].provider == 'AWS') {
@@ -70,7 +65,6 @@ export class AppComponent implements OnInit, DoCheck {
           }
           this.hardwareData.set(item, dataArr);
         }
-        console.log(this.hardwareData);
         this.setProviderDetails();
     });
   }
@@ -90,7 +84,6 @@ export class AppComponent implements OnInit, DoCheck {
         this.dropdownData.set(this.hardwareDataArr[item].provider, instanceSet);
         instanceSet = new Set();
       }
-      console.log(this.dropdownData);
     }
 //   console.log(this.hardwareData.entries());
 //    if (this.selection != 'Select Provider') {
@@ -133,20 +126,12 @@ export class AppComponent implements OnInit, DoCheck {
   addRow(){
   // null check, then add row components
     if(this.instanceSelection && this.providerSelection) {
-//       datagridArr.push(this.providerSelection, this.instanceSelection);
-      console.log(this.datagridArr);
       for(let item in this.hardwareDataArr) {
-        console.log(this.providerSelection);
-        console.log(this.hardwareDataArr[item].provider);
         // search map of data to find the full data for provider and selection
         if(this.hardwareDataArr[item].provider === this.displayProviders.get(this.providerSelection)
           && this.hardwareDataArr[item].instance === this.instanceSelection) {
-            console.log('match found!');
             this.datagridArr.push(this.hardwareDataArr[item]);
-            console.log(this.datagridArr);
             this.clearInputs();
-//             newRowHardware: Hardware = new Hardware(this.hardwareDataArr[item]);
-//             console.log(newRowHardware);
           }
       }
     }
@@ -195,6 +180,9 @@ export class AppComponent implements OnInit, DoCheck {
 
   sendBenchmarkObj() {
     this.createBenchmarkObj();
+    if((Number(this.numTrials) * Number(this.runsPerTrial)) <= 1000) {
+      // make service call to /benchmark
+    }
   }
 
 }
