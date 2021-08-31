@@ -1,6 +1,7 @@
 import { Component, OnInit, DoCheck } from '@angular/core';
 import { AppService } from './app.component.service';
 import { Hardware } from '../models/hardware';
+import { Benchmark } from '../models/benchmark';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,13 @@ export class AppComponent implements OnInit, DoCheck {
   dropdownData: Map<String, Set<String>> = new Map();
   displayProviders: Map<String, String> = new Map();
   datagridArr: Hardware[] = [];
+//   accelerateCardClicked: boolean = false;
+  onxChecked: boolean = false;
+  tvmChecked: boolean = false;
+  engine: any;
+  numTrials: string ='';
+  runsPerTrial: string ='';
+
 
   constructor(private appComponentService: AppService){}
 
@@ -149,12 +157,52 @@ export class AppComponent implements OnInit, DoCheck {
     this.providerSelection = '';
   }
 
+  toggleCardOpen() {
+    console.log('testing open card');
+    switch(this.accelerateIsChecked){
+      case true:
+        this.accelerateIsChecked = false;
+        break;
+      case false:
+        this.accelerateIsChecked = true;
+        break;
+    }
+  }
+
+  createBenchmarkObj() {
+    let benchmarkToSend = new Benchmark(this.engine, this.datagridArr, this.numTrials, this.runsPerTrial);
+    console.log(benchmarkToSend);
+  }
+
+  getEngine() {
+    if(this.onxChecked) {
+      this.engine='ONX';
+    } else if (this.tvmChecked) {
+      this.engine='TVM';
+    } else if (this.onxChecked && this.tvmChecked) {
+      this.engine=['ONX', 'TVM'];
+    }
+  }
+
+  checkAllValuesPresent(): boolean {
+    this.getEngine();
+    let allValuesPresent = false;
+    if(this.numTrials && this.runsPerTrial && this.engine && this.datagridArr.length > 0) {
+      allValuesPresent = true;
+    }
+    return allValuesPresent;
+  }
+
+  sendBenchmarkObj() {
+    this.createBenchmarkObj();
+  }
+
 }
 /*
 
 Next Steps:
   reset errors on datalists when inputs reset
-  create total runs pane with octomize button that sends data to backend
-  1. properly create object to post to both accelerate and benchmark
-  2.
+  properly create object to send to /accelerate
+  2.only send post to benchmark if num trials * runs per trial <= 1000
+  separate out #runs and runs/trial variables for accelerate and benchmark
  */

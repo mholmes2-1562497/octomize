@@ -16,6 +16,7 @@
       <div class="clr-row">
         <div class="clr-col-4">
         </div>
+
         <div class="clr-col-lg-5 clr-col-md-8 clr-col-12">
           <div class="card">
             <div class="card-header">
@@ -35,13 +36,33 @@
                     <p class="card-text">
                       Subcontent about Benchmarks
                     </p>
+                    <p *ngIf="benchmarkIsChecked">
+                      <clr-checkbox-wrapper>
+                        <input type="checkbox" clrCheckbox name="accelerate" required [(ngModel)]="onxChecked" />
+                        <label class="optionsTitle">ONNX Engine</label>
+                      </clr-checkbox-wrapper>
+                      <clr-checkbox-wrapper>
+                        <input type="checkbox" clrCheckbox name="accelerate" required [(ngModel)]="tvmChecked" />
+                        <label class="optionsTitle">TVM Engine</label>
+                      </clr-checkbox-wrapper>
+                      <clr-input-container>
+                        <label>Number of Trials</label>
+                        <input clrInput placeholder="Enter Number of Trials" name="input" [(ngModel)]="numTrials" />
+
+                      </clr-input-container>
+                      <clr-input-container>
+                        <label>Runs Per Trial</label>
+                        <input clrInput placeholder="Enter Runs Per Trial" name="input" [(ngModel)]="runsPerTrial" />
+                      </clr-input-container>
+                    </p>
                   </div>
                 </a>
               </div>
             </div>
             <div class="clr-row checkBox">
               <div class="clr-col-sm-12 clr-col-md-10">
-                <a href="javascript:void(0)" class="card clickable">
+<!--                (click)="toggleCardOpen()"-->
+                <a href="javascript:void(0)" class="card clickable" >
                   <div class="card-img">
                     <clr-checkbox-wrapper>
                       <input type="checkbox" clrCheckbox name="accelerate" required [(ngModel)]="accelerateIsChecked" />
@@ -52,6 +73,25 @@
                   <div class="card-block">
                     <p class="card-text">
                       More information about Accelerate
+                    </p>
+                    <p class="card-text" *ngIf="accelerateIsChecked">
+                      <clr-checkbox-wrapper>
+                        <input type="checkbox" clrCheckbox name="accelerate" required [(ngModel)]="onxChecked" />
+                        <label class="optionsTitle">ONNX Engine</label>
+                      </clr-checkbox-wrapper>
+                      <clr-checkbox-wrapper>
+                        <input type="checkbox" clrCheckbox name="accelerate" required [(ngModel)]="tvmChecked" />
+                        <label class="optionsTitle">TVM Engine</label>
+                      </clr-checkbox-wrapper>
+                      <clr-input-container>
+                        <label>Number of Trials</label>
+                        <input clrInput placeholder="Enter Number of Trials" name="input" [(ngModel)]="numTrials" />
+
+                      </clr-input-container>
+                      <clr-input-container>
+                        <label>Runs Per Trial</label>
+                        <input clrInput placeholder="Enter Runs Per Trial" name="input" [(ngModel)]="runsPerTrial" />
+                      </clr-input-container>
                     </p>
                   </div>
                 </a>
@@ -64,37 +104,8 @@
                 <button class="btn btn-sm btn-primary add-btn" (click)="openModal = true;">Add</button>
               </span>
               </div>
-
             </div>
-            <clr-modal [(clrModalOpen)]="openModal">
-              <h3 class="modal-title">Select a provider</h3>
-              <div class="modal-body">
-                <form clrForm>
-                  <clr-datalist-container>
-                    <input name="providerSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="providerSelection"/>
-                    <datalist>
-                      <option *ngFor="let provider of getProviders()" [value]="provider">{{provider}}</option>
-                    </datalist>
-                    <clr-control-helper>Select Provider</clr-control-helper>
-                    <clr-control-error>There was an error</clr-control-error>
-                  </clr-datalist-container>
-                </form>
-                <form clrForm>
-                  <clr-datalist-container>
-                    <input name="instanceSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="instanceSelection"/>
-                    <datalist>
-                      <option *ngFor="let instance of getInstances(providerSelection)" [value]="instance">{{instance}}</option>
-                    </datalist>
-                    <clr-control-helper>Select Instance</clr-control-helper>
-                    <clr-control-error>There was an error</clr-control-error>
-                  </clr-datalist-container>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-outline" (click)="openModal = false">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="openModal = false; addRow()">Add</button>
-              </div>
-            </clr-modal>
+
             <clr-datagrid>
               <clr-dg-column>Provider</clr-dg-column>
               <clr-dg-column>Instance</clr-dg-column>
@@ -108,27 +119,54 @@
                 <clr-dg-cell>{{hardware.memory}}</clr-dg-cell>
               </clr-dg-row>
             </clr-datagrid>
-            <div class="card-footer">
-<!--              <button class="btn btn-sm btn-link">Footer Action 1</button>-->
-<!--              <button class="btn btn-sm btn-link">Footer Action 2</button>-->
-            </div>
           </div>
         </div>
+
         <div class="clr-col-md-2">
           <div class="card">
             <div class="card-header">
               Total Runs
             </div>
             <div class="card-block">
-              <button class="btn btn-sm btn-primary add-btn">Octomize</button>
+              <button class="btn btn-sm btn-primary add-btn" *ngIf="checkAllValuesPresent()" (click)="sendBenchmarkObj()">Octomize</button>
               <div class="card-text">
                 {{datagridArr.length}}
               </div>
             </div>
           </div>
       </div>
+
+      <clr-modal [(clrModalOpen)]="openModal">
+        <h3 class="modal-title">Select a provider</h3>
+        <div class="modal-body">
+          <form clrForm>
+            <clr-datalist-container>
+              <input name="providerSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="providerSelection"/>
+              <datalist>
+                <option *ngFor="let provider of getProviders()" [value]="provider">{{provider}}</option>
+              </datalist>
+              <clr-control-helper>Select Provider</clr-control-helper>
+              <clr-control-error>There was an error</clr-control-error>
+            </clr-datalist-container>
+          </form>
+          <form clrForm>
+            <clr-datalist-container>
+              <input name="instanceSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="instanceSelection"/>
+              <datalist>
+                <option *ngFor="let instance of getInstances(providerSelection)" [value]="instance">{{instance}}</option>
+              </datalist>
+              <clr-control-helper>Select Instance</clr-control-helper>
+              <clr-control-error>There was an error</clr-control-error>
+            </clr-datalist-container>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="openModal = false">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="openModal = false; addRow()">Add</button>
+        </div>
+      </clr-modal>
     </div>
   </div>
-
+  </div>
 </div>
 <router-outlet></router-outlet>
