@@ -140,7 +140,7 @@
         <div class="modal-body">
           <form clrForm>
             <clr-datalist-container>
-              <input name="providerSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="providerSelection"/>
+              <input name="providerSelection" required clrDatalistInput [(ngModel)]="providerSelection"/>
               <datalist>
                 <option *ngFor="let provider of getProviders()" [value]="provider">{{provider}}</option>
               </datalist>
@@ -150,7 +150,7 @@
           </form>
           <form clrForm>
             <clr-datalist-container>
-              <input name="instanceSelection" required clrDatalistInput [disabled]="disabled" [(ngModel)]="instanceSelection"/>
+              <input name="instanceSelection" required clrDatalistInput [(ngModel)]="instanceSelection"/>
               <datalist>
                 <option *ngFor="let instance of getInstances(providerSelection)" [value]="instance">{{instance}}</option>
               </datalist>

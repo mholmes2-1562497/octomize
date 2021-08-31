@@ -1,4 +1,4 @@
-import { Component, OnInit, DoCheck } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppService } from './app.component.service';
 import { Hardware } from '../models/hardware';
 import { Benchmark } from '../models/benchmark';
@@ -9,11 +9,9 @@ import { Benchmark } from '../models/benchmark';
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent implements OnInit, DoCheck {
+export class AppComponent implements OnInit {
   accelerateIsChecked: boolean = false;
   benchmarkIsChecked: boolean = false;
-  disabled: boolean = false;
-  instanceSelected: boolean = false;
   onxChecked: boolean = false;
   openModal: boolean = false;
   tvmChecked: boolean = false;
@@ -31,23 +29,10 @@ export class AppComponent implements OnInit, DoCheck {
   engine: any;
   hardwareDataArr: any;
 
-
-
-
   constructor(private appComponentService: AppService){}
 
   ngOnInit() {
     this.getHardwareInfo();
-  }
-
-  ngDoCheck() {
-//     console.log(this.accelerateIsChecked);
-//     console.log(this.providerSelection);
-//     console.log(this.getProviders());
-//     console.log(this.dropdownData);
-//     console.log(this.getInstances(this.providerSelection));
-//     this.setProviderDetails();
-//     console.log(this.instanceOptions);
   }
 
   getHardwareInfo() {
@@ -72,43 +57,24 @@ export class AppComponent implements OnInit, DoCheck {
   // assign map of provider abbreviation with set of instances
   setProviderDetails() {
     // get provider, if already created, get set and push to set, otherwise add new set
-    let instanceSet: Set<String> = new Set();
     for(let item in this.hardwareDataArr) {
+      let instanceSet: Set<String> = new Set();
       if(this.dropdownData.get(this.hardwareDataArr[item].provider)) {
-        // get current set, and add new instance value
-        let tempSet: Set<String> = new Set();
-        tempSet = this.dropdownData.get(this.hardwareDataArr[item].provider)!;
-        tempSet.add(this.hardwareDataArr[item].instance);
+        instanceSet = this.dropdownData.get(this.hardwareDataArr[item].provider)!;
+        instanceSet.add(this.hardwareDataArr[item].instance);
+        this.dropdownData.set(this.hardwareDataArr[item].provider, instanceSet);
       } else {
         instanceSet.add(this.hardwareDataArr[item].instance);
         this.dropdownData.set(this.hardwareDataArr[item].provider, instanceSet);
-        instanceSet = new Set();
       }
     }
-//   console.log(this.hardwareData.entries());
-//    if (this.selection != 'Select Provider') {
-//        console.log(this.hardwareData.get(this.selection));
-//    }
-//    if (this.selection == 'Amazon Web Services') {
-//       console.log(this.hardwareData.get('AWS'));
-//    }
-//     for (let [key, value] of this.hardwareData) {
-// //       console.log(value);
-//       for(let instance of value) {
-// //         console.log(instance);
-//         if (instance.provider === this.selection) {
-//           console.log('the same!')
-//         }
-//       }
-//     }
   }
 
-  // get array of instances to display in dropdowns
+  // get array of instances to display in html dropdowns
   getInstances(key: string): string[] {
     let instancesArr: any[] = [];
     // set of instances from abbreviations of providers
     let instancesSet: Set<String> = this.dropdownData.get(this.displayProviders.get(key));
-    console.log(instancesSet);
     if (instancesSet) {
       for(let value of Array.from(instancesSet).values()) {
         instancesArr.push(value);
@@ -117,12 +83,13 @@ export class AppComponent implements OnInit, DoCheck {
      return instancesArr;
   }
 
-  // get array of providers to display in drowdown
+  // get array of providers to display in html drowdown
   getProviders(): string[] {
     let providersArr: any[] = Array.from(this.displayProviders.keys());
     return providersArr;
   }
 
+  // add row of provider, instance, cpu, and memory to datagrid
   addRow(){
   // null check, then add row components
     if(this.instanceSelection && this.providerSelection) {
@@ -142,18 +109,6 @@ export class AppComponent implements OnInit, DoCheck {
     this.providerSelection = '';
   }
 
-  toggleCardOpen() {
-    console.log('testing open card');
-    switch(this.accelerateIsChecked){
-      case true:
-        this.accelerateIsChecked = false;
-        break;
-      case false:
-        this.accelerateIsChecked = true;
-        break;
-    }
-  }
-
   createBenchmarkObj() {
     let benchmarkToSend = new Benchmark(this.engine, this.datagridArr, this.numTrials, this.runsPerTrial);
     console.log(benchmarkToSend);
@@ -169,6 +124,7 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
+  // checks all inputs are present to display octomize button in total runs pane
   checkAllValuesPresent(): boolean {
     this.getEngine();
     let allValuesPresent = false;
@@ -186,11 +142,11 @@ export class AppComponent implements OnInit, DoCheck {
   }
 
 }
-/*
 
+/*
 Next Steps:
-  reset errors on datalists when inputs reset
+  reset error status on datalists when inputs reset in modal
+  make service call to /benchmark and send new Benchmark Object
   properly create object to send to /accelerate
-  2.only send post to benchmark if num trials * runs per trial <= 1000
   separate out #runs and runs/trial variables for accelerate and benchmark
  */
